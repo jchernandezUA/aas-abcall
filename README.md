@@ -3,10 +3,10 @@
 Prueba experimental relacionada con la materia de Arquitecturas Ágiles de Software
 
 ## Integrantes
-Jose Carlos Hernández
-Nelson Leonel Fonseca Ochoa
-Nicolas Esteban Garcia Valde
-Sergio Mena Zamora
+* Jose Carlos Hernández
+* Nelson Leonel Fonseca Ochoa
+* Nicolas Esteban Garcia Valde
+* Sergio Mena Zamora
 
 ## Instalación
 
