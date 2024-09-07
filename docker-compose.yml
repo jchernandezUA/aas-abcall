@@ -1,0 +1,26 @@
+version: "3.2"
+services:
+  redis:
+    image: redis
+    volumes: 
+      - ./data:/data
+  broker:
+    volumes:
+        - ./broker/:/mnt/
+    build: ./broker
+    working_dir: /broker/
+    command: sh run_broker.sh
+    depends_on: 
+      - redis
+  receptor:
+    volumes:
+        - ./receptor/:/mnt/
+    build: ./receptor
+    working_dir: /receptor/
+    command: sh run_receptor.sh
+  monitor:
+    volumes:
+        - ./monitor/:/mnt/
+    build: ./monitor
+    working_dir: /monitor/
+    command: sh run_monitor.sh
