@@ -5,7 +5,7 @@ Prueba experimental relacionada con la materia de Arquitecturas Ágiles de Softw
 ## Integrantes
 Jose Carlos Hernández
 Nelson Leonel Fonseca Ochoa
-Nicolas
+Nicolas Esteban Garcia Valde
 Sergio Mena Zamora
 
 ## Instalación
