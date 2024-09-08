@@ -28,9 +28,36 @@ services:
       - redis
   llamadas-queries:
     volumes:
-        - ./llamada/:/mnt/
-    build: ./llamada
+        - ./llamada-queries/:/mnt/
+    build: ./llamada-queries
     working_dir: /backend/
     command: sh run_queries.sh
     depends_on: 
       - redis
+  llamadas-queries-redundante:
+    volumes:
+        - ./llamada-queries-redundante/:/mnt/
+    build: ./llamada-queries-redundante
+    working_dir: /backend/
+    command: sh run_queries.sh
+    depends_on: 
+      - redis
+
+  llamadas-comandos:
+    volumes:
+        - ./llamada-comandos/:/mnt/
+    build: ./llamada-comandos
+    working_dir: /backend/
+    command: sh run_llamadas_principal.sh
+    depends_on: 
+      - redis
+
+  llamadas-comandos-redundante:
+    volumes:
+        - ./llamada-comandos-redundante/:/mnt/
+    build: ./llamada-comandos-redundante
+    working_dir: /backend/
+    command: sh run_llamadas_redundante.sh
+    depends_on: 
+      - redis
+

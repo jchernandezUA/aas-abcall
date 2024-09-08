@@ -33,7 +33,7 @@ class LLamadaList(Resource):
             return {"message": "Error al obtener llamadas"}, 500
     
 
-api.add_resource(LLamadaList, '/api-queries/llamadas')
+api.add_resource(LLamadaList, '/api-queries/llamadas-principal')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

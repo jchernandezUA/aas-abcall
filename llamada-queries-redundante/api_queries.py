@@ -1,0 +1,39 @@
+from base import app, api, Resource, Llamada, llamada_schema, redis_client, request
+import json
+import time
+
+class LLamadaList(Resource):
+    def get(self):
+        try:
+             # Obtener los parámetros de la solicitud GET y decodificar el JSON
+            params = request.args.to_dict()
+
+            # Convertir los parámetros JSON en un diccionario Python
+            arrival_time = params.get('time')  
+            message = params.get('message')
+
+            # Obtener todas las llamadas desde la base de datos
+            llamadas = Llamada.query.all()
+            
+            # Serializar los datos de llamadas
+            serialized_llamadas = llamada_schema.dump(llamadas, many=True)
+
+            #Enviar a la cola de respuesta con el nombre nombre hora en que genero el tiempo el monitor y la hora de respuesta del servicio, estatus true
+            redis_client.lpush('control_respuesta', json.dumps({'name': 'LLAMADAS', 'status': 'true', 'arrival_time': arrival_time, 'departure_time':time.time()}))
+            
+            # Retornar los datos serializados y un código de estado 200
+            return serialized_llamadas, 200
+        
+        except Exception as e:
+            # Manejar cualquier excepción que pueda ocurrir
+            print(f"Error al obtener llamadas: {e}")
+            #Enviar a la cola de respuesta con el nombre nombre hora en que genero el tiempo el monitor y la hora de respuesta del servicio estatus false
+            redis_client.lpush('control_respuesta', json.dumps({'name': 'LLAMADAS', 'status': 'false', 'arrival_time': arrival_time, 'departure_time':time.time()}))
+            # Retornar un mensaje de error y un código de estado 500
+            return {"message": "Error al obtener llamadas"}, 500
+    
+
+api.add_resource(LLamadaList, '/api-queries/llamadas-redundante')
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')
