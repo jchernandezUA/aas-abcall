@@ -18,9 +18,19 @@ services:
     build: ./receptor
     working_dir: /receptor/
     command: sh run_receptor.sh
+    depends_on:
+      - redis
   monitor:
-    volumes:
-        - ./monitor/:/mnt/
     build: ./monitor
     working_dir: /monitor/
     command: sh run_monitor.sh
+    depends_on:
+      - redis
+  llamadas-queries:
+    volumes:
+        - ./llamada/:/mnt/
+    build: ./llamada
+    working_dir: /backend/
+    command: sh run_queries.sh
+    depends_on: 
+      - redis

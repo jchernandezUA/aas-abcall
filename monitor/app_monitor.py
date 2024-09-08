@@ -5,7 +5,7 @@ from redis import Redis
 import random
 
 
-app = Celery('monitor', broker='redis://localhost:6379/0')
+app = Celery('monitor', broker='redis://redis:6379/0')
 
 app.conf.beat_schedule = {
     'health_check': {
@@ -26,7 +26,7 @@ app.conf.beat_schedule = {
 
 app.conf.timezone = 'UTC'
 
-redis_client = Redis(host='localhost', port=6379, db=0)
+redis_client = Redis(host='redis', port=6379, db=0)
 
 # mensaje de control {'message':'health_check' , 'time': time.time()}
 # mensaje de respuesta {'component': 'LLamada1', 'status': 'false', 'arrival_time': mensaje_control.time, 'departure_time':time.time()}
