@@ -32,6 +32,7 @@ Esto para levantar los contenedores:
 * broker se encarga de la cola se mensajes (control, control_respuesta, comandos)
 * monitoreo continuamente checando el estado de salud al estar generando eventos en la cola de control y monitoreando la cola control_respuesta
 * receptor componente con la responsabilidad de estar monitoreando la cola de control y creando comunicación sincrona con los componentes de LLamadas
-* llamadas pendiente
+* llamadas principal se encarga de recibir los comandos o queries del elemento receptor y su funcion es ser el servicio principal
+* llamadas redundante se encarga de recibir los comandos o queries del elemento receptor y su funcion es ser el servicio redundante, si falla el principal este entre a reemplazarlo.
 
 

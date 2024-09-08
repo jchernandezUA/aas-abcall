@@ -24,3 +24,16 @@ services:
     build: ./monitor
     working_dir: /monitor/
     command: sh run_monitor.sh
+  llamadas_principal:
+    volumes:
+        - ./llamadas/llamadas_principal/:/mnt/
+    build: ./llamadas/llamadas_principal
+    working_dir: /llamadas/llamadas_principal/
+    command: sh run_llamadas_principal.sh
+
+  llamadas_redundante:
+    volumes:
+      - ./llamadas/llamadas_redundante/:/mnt/
+    build: ./llamadas/llamadas_redundante
+    working_dir: /llamadas/llamadas_redundante/
+    command: sh run_llamadas_redundante.sh
