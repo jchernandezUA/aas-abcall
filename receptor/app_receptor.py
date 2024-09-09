@@ -8,12 +8,13 @@ import aiohttp
 
 
 # Configurar cliente Redis
-redis_client = redis.Redis(host='redis', port=6379, db=0)
+#redis_client = redis.Redis(host='redis', port=6379, db=0)
+redis_client = redis.Redis(host='localhost', port=6379, db=0)
 
 # Lista de URLs de microservicios
 MICROSERVICIOS = [
-    'http://localhost:5000/api-queries/llamadas',
-    #'http://localhost:5001/api-queries/llamadas2',
+    'http://localhost:5001/api-queries/llamadas',
+    'http://localhost:5002/api-queries/llamadas',
     # Añade más URLs de microservicios según sea necesario
 ]
 

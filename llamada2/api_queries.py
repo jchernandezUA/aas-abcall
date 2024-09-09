@@ -14,11 +14,13 @@ class LLamadaList(Resource):
             message = params.get('message')
 
             # Obtener todas las llamadas desde la base de datos
-            llamadas = Llamada.query.all()            
+            llamadas = Llamada.query.all()
+            
             # Serializar los datos de llamadas
             serialized_llamadas = llamada_schema.dump(llamadas, many=True)
-             #Enviar a la cola de respuesta con el nombre nombre hora en que genero el tiempo el monitor y la hora de respuesta del servicio, estatus true
-            redis_client.lpush('control_respuesta', json.dumps({'name': 'LLAMADAS', 'status': 'true', 'arrival_time': arrival_time, 'departure_time':time.time()}))
+
+            #Enviar a la cola de respuesta con el nombre nombre hora en que genero el tiempo el monitor y la hora de respuesta del servicio, estatus true
+            redis_client.lpush('control_respuesta', json.dumps({'name': 'LLAMADAS2', 'status': 'true', 'arrival_time': arrival_time, 'departure_time':time.time()}))
             # Retornar los datos serializados y un código de estado 200
             return serialized_llamadas, 200
         
@@ -34,6 +36,6 @@ class LLamadaList(Resource):
 api.add_resource(LLamadaList, '/api-queries/llamadas')
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001, use_reloader=False)
+    app.run(debug=True, host='0.0.0.0', port=5002, use_reloader=False)
 
 

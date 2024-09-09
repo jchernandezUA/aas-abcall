@@ -5,6 +5,7 @@ from sender import process_command, handle_control, response_control
 
 #Config de redis
 redis_conn = Redis(host='redis', port=6379, db=0)
+redis_conn = Redis(host='localhost', port=6379, db=0)
 # Definir las colas
 q_comandos = Queue('comandos', connection=redis_conn)
 q_control = Queue('control', connection=redis_conn)

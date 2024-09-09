@@ -3,35 +3,31 @@ import time
 import json
 from redis import Redis
 import random
+import datetime
 
 
-app = Celery('monitor', broker='redis://redis:6379/0')
+app = Celery('monitor', broker='redis://localhost:6379/0')
 
 app.conf.beat_schedule = {
     'health_check': {
-        'task': 'monitor.send_control_health_check',
+        'task': 'app_monitor.send_control_health_check',
         'schedule': 2.0
     },
 
     'control_check': {
-        'task': 'monitor.control_check',
-        'schedule': 2.0
-    },
-
-    'componente': {
-        'task': 'monitor.componente_llamadas',
+        'task': 'app_monitor.control_check',
         'schedule': 2.0
     }
 }
 
 app.conf.timezone = 'UTC'
 
-redis_client = Redis(host='redis', port=6379, db=0)
+redis_client = Redis(host='localhost', port=6379, db=0)
 
 # mensaje de control {'message':'health_check' , 'time': time.time()}
 # mensaje de respuesta {'component': 'LLamada1', 'status': 'false', 'arrival_time': mensaje_control.time, 'departure_time':time.time()}
 
-COMPONENTS = ['LLAMADAS']
+COMPONENTS = ['LLAMADAS','LLAMADAS2']
 QUEUE_CONTROL = 'control'
 QUEUE_RESPONSE = 'control_respuesta'
 
@@ -53,9 +49,8 @@ def control_check():
 
     messages = redis_client.lrange(QUEUE_RESPONSE, 0,-1)
     
-    list_components = COMPONENTS
+    list_components = COMPONENTS.copy()
     
-    print(messages)
     for _ in range(len((messages))):
         element = redis_client.brpop(QUEUE_RESPONSE, timeout=1)
         if element:
@@ -74,7 +69,7 @@ def control_check():
     redis_client.delete(QUEUE_RESPONSE)
 
 def send_notification(name):
-    log_message('NOTIFICATION ALERT {}'.format(name))
+    log_message('{} NOTIFICATION ALERT {}'.format(datetime.datetime.now(),name))
 
 @app.task
 def componente_llamadas():
