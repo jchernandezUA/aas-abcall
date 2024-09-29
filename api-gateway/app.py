@@ -10,9 +10,9 @@ app.config['JWT_SECRET_KEY'] = 'frase-secreta'
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
 # URLs de los microservicios corregidas
-MICRO_LLAMADAS_URL = "http://localhost:5001"
+MICRO_LLAMADAS_URL = "https://localhost:5001"
 MICRO_CHATBOT_URL = "http://localhost:5002"
-API_COMANDO_URL = "http://localhost:5003/comandos"
+API_COMANDO_URL = "http://localhost:5003"
 
 api = Api(app)
 cors = CORS(app)
@@ -26,7 +26,11 @@ class ApiGateway(Resource):
             return {"error": "Servicio no encontrado"}, 404
 
         try:
-            response = requests.get(f"{url}/{resource_name}")
+            
+            response = requests.get(
+                f"{url}/{resource_name}",
+                verify=False
+            )
             response.raise_for_status()  # Verificar si hay un error HTTP
             return jsonify(response.json())
         except requests.exceptions.RequestException as e:
@@ -56,7 +60,7 @@ class ApiGateway(Resource):
             return MICRO_LLAMADAS_URL
         elif service_name == 'chatbot-service':
             return MICRO_CHATBOT_URL
-        elif service_name == 'comandos':
+        elif service_name == 'comandos-service':
             return API_COMANDO_URL
         else:
             return None
