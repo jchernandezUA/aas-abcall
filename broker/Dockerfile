@@ -1,9 +1,10 @@
-# Dockerfile
-
 # Usar una imagen base de Python
 FROM python:3.8-slim
 
 RUN mkdir /broker
+
+# Instalar redis-tools para usar redis-cli
+RUN apt-get update && apt-get install -y redis-tools
 
 # Establecer el directorio de trabajo
 WORKDIR /broker
@@ -13,7 +14,7 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copiar todo el código fuente al contenedor
-ADD * /broker/
+COPY . /broker/
 
-#exponiendo el puerto
+# Exponer el puerto
 EXPOSE 6379
