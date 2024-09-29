@@ -12,6 +12,7 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 # URLs de los microservicios corregidas
 MICRO_LLAMADAS_URL = "http://localhost:5001"
 MICRO_CHATBOT_URL = "http://localhost:5002"
+API_COMANDO_URL = "http://localhost:5003/comandos"
 
 api = Api(app)
 cors = CORS(app)
@@ -35,9 +36,9 @@ class ApiGateway(Resource):
         url = self.parseUrl(service_name)
         if url is None:
             return {"error": "Servicio no encontrado"}, 404
-        data = requests.get_json()  # Datos del comando en JSON
+
         try:
-            response = requests.post(f"{url}/{resource_name}", json=data)
+            response = requests.post(f"{url}/{resource_name}")
             response.raise_for_status()  # Verificar si hay un error HTTP
             return jsonify(response.json())
         except requests.exceptions.RequestException as e:
@@ -48,6 +49,8 @@ class ApiGateway(Resource):
             return MICRO_LLAMADAS_URL
         elif service_name == 'chatbot-service':
             return MICRO_CHATBOT_URL
+        elif service_name == 'comandos':
+            return API_COMANDO_URL
         else:
             return None
 
