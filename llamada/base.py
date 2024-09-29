@@ -9,6 +9,9 @@ from faker import Faker
 from datetime import datetime
 import redis
 
+cert_path = '/etc/llamada/tls/certificado.pem'
+key_path = '/etc/llamada/tls/llave.pem'
+ca_cert_path = '/etc/llamada/tls/ca-cert.pem'
 
 
 app = Flask(__name__)
@@ -17,7 +20,18 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///llamadas.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
 #redis_client = redis.Redis(host='redis', port=6379, db=0)
-redis_client = redis.Redis(host='localhost', port=6379, db=0)
+#redis_client = redis.Redis(host='redis', port=6379, db=0)
+
+# Configuración del cliente Redis con SSL/TLS
+redis_client = redis.StrictRedis(
+    host='redis',  # Cambia esto al host de tu servidor Redis
+    port=6379,  # Puerto por defecto de Redis
+    ssl=True,
+    ssl_certfile=cert_path,
+    ssl_keyfile=key_path,
+    ssl_ca_certs=ca_cert_path,
+    ssl_cert_reqs='required'  # Asegura que se verifique el certificado del servidor
+)
 
 
 
