@@ -35,9 +35,9 @@ class ApiGateway(Resource):
         url = self.parseUrl(service_name)
         if url is None:
             return {"error": "Servicio no encontrado"}, 404
-
+        data = requests.get_json()  # Datos del comando en JSON
         try:
-            response = requests.post(f"{url}/{resource_name}")
+            response = requests.post(f"{url}/{resource_name}", json=data)
             response.raise_for_status()  # Verificar si hay un error HTTP
             return jsonify(response.json())
         except requests.exceptions.RequestException as e:
