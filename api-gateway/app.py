@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_restful import Api, Resource
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
@@ -36,9 +36,16 @@ class ApiGateway(Resource):
         url = self.parseUrl(service_name)
         if url is None:
             return {"error": "Servicio no encontrado"}, 404
-
+        data = request.get_json()
+        if not data:
+            return {"error": "No se recibieron datos"}, 400
         try:
-            response = requests.post(f"{url}/{resource_name}")
+            if resource_name:
+                full_url = f"{url}/{resource_name}"
+            else:
+                full_url = url
+            
+            response = requests.post(full_url, json=data)
             response.raise_for_status()  # Verificar si hay un error HTTP
             return jsonify(response.json())
         except requests.exceptions.RequestException as e:

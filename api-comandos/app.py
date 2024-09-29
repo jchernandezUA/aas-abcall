@@ -10,7 +10,7 @@ app.config['JWT_SECRET_KEY'] = 'frase-secreta'
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
 # Configurar conexión a Redis
-redis_client  = Redis(host='localhost', port=6379, db=0)
+#redis_client  = Redis(host='localhost', port=6379, db=0)
 
 
 # Inicialización de la API
@@ -27,7 +27,7 @@ class ApiComando(Resource):
             return {"error": "No se recibieron datos"}, 400
         
         # Convertir a JSON y agregar a la lista 'commands' en Redis
-        redis_client.lpush('commands', json.dumps(data))
+        #redis_client.lpush('commands', json.dumps(data))
         
         return {"message": "Comando encolado"}, 200
 
@@ -35,4 +35,4 @@ class ApiComando(Resource):
 api.add_resource(ApiComando, '/comandos')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5003)
