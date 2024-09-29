@@ -60,5 +60,18 @@ services:
       - ./nginx/tls/llave.pem:/etc/nginx/tls/llave.pem:ro
       - ./nginx/tls/ca-cert.pem:/etc/nginx/tls/ca-cert.pem:ro
       - ./nginx/tls/broker-cert.pem:/etc/nginx/tls/broker-cert.pem:ro
+      - ./nginx/tls/autorizador-cert.pem:/etc/nginx/tls/autorizador-cert.pem:ro
     depends_on:
         - llamadas-queries
+  
+  autorizador:
+    volumes:
+      - ./autorizador/:/mnt/
+      - ./nginx/tls/autorizador-cert.pem:/etc/autorizador/tls/autorizador-cert.pem:ro
+      - ./nginx/tls/llave.pem:/etc/autorizador/tls/llave.pem:ro
+      - ./nginx/tls/ca-cert.pem:/etc/autorizador/tls/ca-cert.pem:ro 
+    build: ./autorizador
+    working_dir: /autorizador/
+    command: sh run_autorizador.sh
+    ports:
+      - "5005:5005"
