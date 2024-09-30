@@ -12,8 +12,15 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 # URLs de los microservicios corregidas
 MICRO_LLAMADAS_URL = "https://localhost:5001"
 MICRO_CHATBOT_URL = "http://localhost:5002"
-API_COMANDO_URL = "https://localhost:5003"
-AUTH_SERVICE_URL = "https://localhost:5005"
+API_COMANDO_URL = "https://api-comandos:5003"
+AUTH_SERVICE_URL = "https://autorizador:5005"
+
+# Ruta a los certificados y la clave privada
+CERT_FILE_API_GATEWAY = '/etc/api-gateway/tls/api-gateway-cert.pem'
+KEY_FILE = '/etc/api-gateway/tls/llave.pem'
+CA_CERT_FILE = '/etc/api-gateway/tls/ca-cert.pem'
+CERT_FILE_COMANDOS = '/etc/api-gateway/tls/api-comandos-cert.pem'
+
 
 api = Api(app)
 cors = CORS(app)
@@ -63,7 +70,8 @@ class ApiGateway(Resource):
             check_permissions(request, {"method": "POST"})
 
             #redirige la petición al microservicio
-            response = requests.post(full_url, json=data, verify=False)
+
+            response = requests.post(full_url, json=data, cert=(CERT_FILE_COMANDOS, KEY_FILE), verify=CA_CERT_FILE)
             response.raise_for_status()
             return jsonify(response.json())
         except requests.exceptions.RequestException as e:
@@ -96,4 +104,4 @@ api.add_resource(ApiGateway, '/api/<string:service_name>/', '/api/<string:servic
 api.add_resource(LoginVista, '/api/auth-service/login')
 
 if __name__ == '__main__':
-    app.run(ssl_context=('../nginx/tls/certificado.pem', '../nginx/tls/llave.pem'), host='0.0.0.0', port=6000)
+    app.run(ssl_context=(CERT_FILE_API_GATEWAY, KEY_FILE), host='0.0.0.0', port=6000)

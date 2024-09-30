@@ -43,7 +43,9 @@ api.add_resource(LLamadaHealth, '/api-queries/health')
 api.add_resource(LLamadaList, '/llamadas')
 
 if __name__ == '__main__':
-    app.run(ssl_context=('../nginx/tls/certificado.pem', '../nginx/tls/llave.pem'), host='0.0.0.0', port=5001)
+    #app.run(ssl_context=('../nginx/tls/certificado.pem', '../nginx/tls/llave.pem'), host='0.0.0.0', port=5001)
+    app.run(ssl_context=('/etc/llamada/tls/certificado.pem', '/etc/llamada/tls/llave.pem'), host='0.0.0.0', port=5001)
+
 
 
 

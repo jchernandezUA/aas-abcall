@@ -4,6 +4,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from redis import Redis
 import json
+import ssl
 
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'frase-secreta'
@@ -35,4 +36,20 @@ class ApiComando(Resource):
 api.add_resource(ApiComando, '/comandos')
 
 if __name__ == '__main__':
-    app.run(ssl_context=('../nginx/tls/certificado.pem', '../nginx/tls/llave.pem'), host='0.0.0.0', port=5003)
+
+        # Crear contexto SSL
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+
+    # Cargar certificado y clave privada del servidor
+    context.load_cert_chain(certfile='/etc/comandos/tls/api-comandos-cert.pem', keyfile='/etc/comandos/tls/llave.pem')
+
+    # Cargar el certificado de la CA que firmó los certificados del cliente
+    context.load_verify_locations(cafile='/etc/comandos/tls/ca-cert.pem')
+
+    # Configurar Flask para que verifique el certificado del cliente
+    context.verify_mode = ssl.CERT_REQUIRED
+
+    # Correr la aplicación Flask en HTTPS y con autenticación mutua TLS (mTLS)
+    app.run(debug=True, ssl_context=context, host='0.0.0.0', port=5003)
+
+    #app.run(debug=True, port=5003)

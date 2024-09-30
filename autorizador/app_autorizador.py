@@ -47,6 +47,8 @@ class ValidateToken(Resource):
 api.add_resource(ValidateToken, '/validate')
 
 if __name__ == '__main__':
-    app.run(ssl_context=('../nginx/tls/autorizador-cert.pem', '../nginx/tls/llave.pem'), host='0.0.0.0', port=5005)
+    #app.run(ssl_context=('../nginx/tls/autorizador-cert.pem', '../nginx/tls/llave.pem'), host='0.0.0.0', port=5005)
+    app.run(ssl_context=('/etc/autorizador/tls/autorizador-cert.pem', '/etc/autorizador/tls/llave.pem'), host='0.0.0.0', port=5005)
+
 
 

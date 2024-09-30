@@ -75,3 +75,28 @@ services:
     command: sh run_autorizador.sh
     ports:
       - "5005:5005"
+    
+  api-gateway:
+    volumes:
+      - ./api-gateway/:/mnt/
+      - ./nginx/tls/api-gateway-cert.pem:/etc/api-gateway/tls/api-gateway-cert.pem:ro
+      - ./nginx/tls/llave.pem:/etc/api-gateway/tls/llave.pem:ro
+      - ./nginx/tls/ca-cert.pem:/etc/api-gateway/tls/ca-cert.pem:ro
+      - ./nginx/tls/api-comandos-cert.pem:/etc/api-gateway/tls/api-comandos-cert.pem:ro
+    build: ./api-gateway
+    working_dir: /api-gateway/
+    command: sh run_api_gateway.sh
+    ports:
+      - "6000:6000"
+  
+  api-comandos:
+    volumes:
+      - ./api-comandos/:/mnt/
+      - ./nginx/tls/api-comandos-cert.pem:/etc/comandos/tls/api-comandos-cert.pem:ro
+      - ./nginx/tls/llave.pem:/etc/comandos/tls/llave.pem:ro
+      - ./nginx/tls/ca-cert.pem:/etc/comandos/tls/ca-cert.pem:ro 
+    build: ./api-comandos
+    working_dir: /api-comandos/
+    command: sh run_api_comandos.sh
+    ports:
+      - "5003:5003"
