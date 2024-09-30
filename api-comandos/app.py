@@ -35,4 +35,4 @@ class ApiComando(Resource):
 api.add_resource(ApiComando, '/comandos')
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5003)
+    app.run(ssl_context=('../nginx/tls/certificado.pem', '../nginx/tls/llave.pem'), host='0.0.0.0', port=5003)

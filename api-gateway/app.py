@@ -12,82 +12,59 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 # URLs de los microservicios corregidas
 MICRO_LLAMADAS_URL = "https://localhost:5001"
 MICRO_CHATBOT_URL = "http://localhost:5002"
-API_COMANDO_URL = "http://localhost:5003"
-AUTH_SERVICE_URL = "http://localhost:5005"
+API_COMANDO_URL = "https://localhost:5003"
+AUTH_SERVICE_URL = "https://localhost:5005"
 
 api = Api(app)
 cors = CORS(app)
 jwt = JWTManager(app)
 
-def check_permissions(token, required_permissions):
-    try:
-        headers = {
-            "Authorization": f"{token}",
-            "Content-Type": "application/json"  
-        }
-        data = {"permissions": required_permissions}
-
-        print(f"Enviando permisos: {data}")  
-        print(f"headers: {headers}")  
-
-        response = requests.post(f"{AUTH_SERVICE_URL}/validate", headers=headers, json=data)
-        response.raise_for_status()
-
-        return response.status_code == 200
-    except requests.exceptions.RequestException as e:
-        print(f"Error verificando permisos: {e}")
-        return False
+def check_permissions(request, data):
+    ## valida permisos del usuario con el autorizador
+    response_auth = requests.post(
+        f"{AUTH_SERVICE_URL}/validate", 
+        headers=request.headers,
+        json=data, verify=False)
+    response_auth.raise_for_status()
 
 class ApiGateway(Resource):
 
+    @jwt_required()
     def get(self, service_name, resource_name=''):
         url = self.parseUrl(service_name)
         if url is None:
             return {"error": "Servicio no encontrado"}, 404
         
-        # Obtener el token de la cabecera Authorization
-        token = request.headers.get('Authorization')
-        if not token or not token.startswith('Bearer '):
-            return {"error": "Falta el token JWT o no está en formato Bearer"}, 401
-
-        # Validar el token y los permisos
-        if not check_permissions(token, ["GET"]):
-            return {"error": "Acceso denegado: Permisos insuficientes"}, 403
-        
         try:
-            
             response = requests.get(
                 f"{url}/{resource_name}",
                 verify=False
             )
-            response.raise_for_status()  # Verificar si hay un error HTTP
+            check_permissions(request, {"method": "GET"})
+            response.raise_for_status()
             return jsonify(response.json())
         except requests.exceptions.RequestException as e:
             return {"error": str(e)}, 500
 
+    @jwt_required()
     def post(self, service_name, resource_name=''):
         url = self.parseUrl(service_name)
         if url is None:
             return {"error": "Servicio no encontrado"}, 404
-        # Obtener el token de la cabecera Authorization
-        token = request.headers.get('Authorization')
-        if not token:
-            return {"error": "Falta el token JWT en la cabecera"}, 401
 
-        # Validar el token y los permisos
-        if not check_permissions(token, ["POST"]):
-            return {"error": "Acceso denegado: Permisos insuficientes"}, 403       
-        data = request.get_json()
-        if not data:
-            return {"error": "No se recibieron datos"}, 400
         try:
             if resource_name:
                 full_url = f"{url}/{resource_name}"
             else:
                 full_url = url
             
-            response = requests.post(full_url, json=data)
-            response.raise_for_status()  # Verificar si hay un error HTTP
+            data = request.get_json()
+
+            check_permissions(request, {"method": "POST"})
+
+            #redirige la petición al microservicio
+            response = requests.post(full_url, json=data, verify=False)
+            response.raise_for_status()
             return jsonify(response.json())
         except requests.exceptions.RequestException as e:
             return {"error": str(e)}, 500
@@ -99,7 +76,24 @@ class ApiGateway(Resource):
             return MICRO_CHATBOT_URL
         elif service_name == 'comandos-service':
             return API_COMANDO_URL
+        elif service_name == 'auth-service':
+            return AUTH_SERVICE_URL
         else:
             return None
 
+class LoginVista(Resource):
+    def post(self):
+        data = request.get_json()
+        try:
+            response = requests.post(f"{AUTH_SERVICE_URL}/login", json=data, verify=False)
+            response.raise_for_status()  # Verificar si hay un error HTTP
+            return jsonify(response.json())
+        except requests.exceptions.RequestException as e:
+            return {"error": str(e)}, 500
+
+
 api.add_resource(ApiGateway, '/api/<string:service_name>/', '/api/<string:service_name>/<string:resource_name>')
+api.add_resource(LoginVista, '/api/auth-service/login')
+
+if __name__ == '__main__':
+    app.run(ssl_context=('../nginx/tls/certificado.pem', '../nginx/tls/llave.pem'), host='0.0.0.0', port=6000)
