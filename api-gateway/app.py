@@ -26,6 +26,10 @@ api = Api(app)
 cors = CORS(app)
 jwt = JWTManager(app)
 
+def create_ssl_context():
+    context = ssl.create_default_context(cafile=CA_CERT_FILE)
+    return context
+
 def check_permissions(request, data):
     ## valida permisos del usuario con el autorizador
     response_auth = requests.post(
@@ -71,7 +75,7 @@ class ApiGateway(Resource):
 
             #redirige la petición al microservicio
 
-            response = requests.post(full_url, json=data, cert=(CERT_FILE_COMANDOS, KEY_FILE), verify=CA_CERT_FILE)
+            response = requests.post(full_url, json=data, cert=(CERT_FILE_COMANDOS, KEY_FILE), verify=False)
             response.raise_for_status()
             return jsonify(response.json())
         except requests.exceptions.RequestException as e:
