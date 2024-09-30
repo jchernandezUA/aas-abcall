@@ -13,10 +13,30 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 MICRO_LLAMADAS_URL = "https://localhost:5001"
 MICRO_CHATBOT_URL = "http://localhost:5002"
 API_COMANDO_URL = "http://localhost:5003"
+AUTH_SERVICE_URL = "http://localhost:5005"
 
 api = Api(app)
 cors = CORS(app)
 jwt = JWTManager(app)
+
+def check_permissions(token, required_permissions):
+    try:
+        headers = {
+            "Authorization": f"{token}",
+            "Content-Type": "application/json"  
+        }
+        data = {"permissions": required_permissions}
+
+        print(f"Enviando permisos: {data}")  
+        print(f"headers: {headers}")  
+
+        response = requests.post(f"{AUTH_SERVICE_URL}/validate", headers=headers, json=data)
+        response.raise_for_status()
+
+        return response.status_code == 200
+    except requests.exceptions.RequestException as e:
+        print(f"Error verificando permisos: {e}")
+        return False
 
 class ApiGateway(Resource):
 
@@ -24,7 +44,16 @@ class ApiGateway(Resource):
         url = self.parseUrl(service_name)
         if url is None:
             return {"error": "Servicio no encontrado"}, 404
+        
+        # Obtener el token de la cabecera Authorization
+        token = request.headers.get('Authorization')
+        if not token or not token.startswith('Bearer '):
+            return {"error": "Falta el token JWT o no está en formato Bearer"}, 401
 
+        # Validar el token y los permisos
+        if not check_permissions(token, ["GET"]):
+            return {"error": "Acceso denegado: Permisos insuficientes"}, 403
+        
         try:
             
             response = requests.get(
@@ -40,6 +69,14 @@ class ApiGateway(Resource):
         url = self.parseUrl(service_name)
         if url is None:
             return {"error": "Servicio no encontrado"}, 404
+        # Obtener el token de la cabecera Authorization
+        token = request.headers.get('Authorization')
+        if not token:
+            return {"error": "Falta el token JWT en la cabecera"}, 401
+
+        # Validar el token y los permisos
+        if not check_permissions(token, ["POST"]):
+            return {"error": "Acceso denegado: Permisos insuficientes"}, 403       
         data = request.get_json()
         if not data:
             return {"error": "No se recibieron datos"}, 400
