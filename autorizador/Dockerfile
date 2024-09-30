@@ -1,20 +1,15 @@
 # Usar una imagen base de Python
 FROM python:3.8-slim
 
-RUN mkdir /broker
-
-# Instalar redis-tools para usar redis-cli
-RUN apt-get update && apt-get install -y redis-tools
+RUN mkdir /autorizador
 
 # Establecer el directorio de trabajo
-WORKDIR /broker
+WORKDIR /autorizador
 
 # Copiar los archivos de requirements y luego instalar dependencias
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copiar todo el código fuente al contenedor
-COPY . /broker/
+COPY . /autorizador/
 
-# Exponer el puerto
-EXPOSE 6379

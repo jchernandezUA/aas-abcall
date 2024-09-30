@@ -16,4 +16,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 ADD * /backend/
 
 #exponiendo el puerto
-EXPOSE 5000
+EXPOSE 5001
