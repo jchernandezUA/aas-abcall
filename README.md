@@ -1,12 +1,41 @@
-# AAS-ABCALL - main
+# AAS-ABCALL
 
-Prueba experimental relacionada con la materia de Arquitecturas Ágiles de Software
+Pruebas experimentales relacionadas con la materia de **Arquitecturas Ágiles de Software**
 
 ## Integrantes
 * Jose Carlos Hernández
 * Nelson Leonel Fonseca Ochoa
 * Nicolas Esteban Garcia Valde
 * Sergio Mena Zamora
+
+## EXPERIMENTO #2: Feature/api_gateway
+
+## Instalación
+
+Pre-requisitos:
+* Tener instalado Docker
+* Tener instalado docker-compose
+
+
+Una vez que bajo el proyecto de GitHub proceder a ejecutar los contenedores (puede ser en segundo plano con la opción -d):
+
+```
+docker-compose up <NOMBRE_DEL_CONTENEDOR>
+```
+Para este experimento ejecutamos:
+* docker-compose up autorizador
+* docker-compose up api-gateway
+* docker-compose up api-comandos
+
+
+## Explicación breve de cada contenedor
+* api-gateway nuestro punto de entrada para el uso de los servicios y autorización de los mismos, dentro de este tambien se encuentran los certificados utilizados para consumir el API de comandos.
+* api-comandos  componente que cambia el estado del sistema, para usar este componente es necesario tener un certificado del lado del consumidor
+* autorizador componente utilizado para autenticar el tipo de usuario asi como sus permisos hacia operaciones GET, POST
+
+
+
+## EXPERIMENTO #1: main
 
 ## Instalación
 

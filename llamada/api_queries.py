@@ -3,7 +3,7 @@ from base import app, api, Resource, Llamada, llamada_schema, redis_client, requ
 import json
 import time
 
-class LLamadaList(Resource):
+class LLamadaHealth(Resource):
     def get(self):
         try:
              # Obtener los parámetros de la solicitud GET y decodificar el JSON
@@ -30,10 +30,22 @@ class LLamadaList(Resource):
             # Retornar un mensaje de error y un código de estado 500
             return {"message": "Error al obtener llamadas"}, 500
     
+class LLamadaList(Resource):
+    def get(self):
+        return [{
+            "id": "1000",
+            "user": 10,
+            "duration": "00:20:15"
+        }]
+    
 
-api.add_resource(LLamadaList, '/api-queries/llamadas')
+api.add_resource(LLamadaHealth, '/api-queries/health')
+api.add_resource(LLamadaList, '/llamadas')
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001, use_reloader=False)
+    #app.run(ssl_context=('../nginx/tls/certificado.pem', '../nginx/tls/llave.pem'), host='0.0.0.0', port=5001)
+    app.run(ssl_context=('/etc/llamada/tls/certificado.pem', '/etc/llamada/tls/llave.pem'), host='0.0.0.0', port=5001)
+
+
 
 
